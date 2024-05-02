@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Product and Category Information</title>
+</head>
+<body>
+    <h1>Product and Category Information</h1>
+    <button id="loadData">Load Products</button>
+    <div id="output"></div>
+
+    <script>
+      // Define functions to fetch products and categories from JSON files
+      async function fetchProducts() {
+          const response = await fetch('./products.json');
+          const data = await response.json();
+          return data.data;
+      }
+      
+      async function fetchCategories() {
+          const response = await fetch('./categories.json');
+          const data = await response.json();
+          return data.data;
+      }
+      
+      async function getProductsAndCategoryDetails() {
+          const outputDiv = document.getElementById('output');
+          outputDiv.innerHTML = '';
+      
+          try {
+              const products = await fetchProducts();
+              const categories = await fetchCategories();
+      
+              products.forEach(product => {
+                  const category = categories.find(cat => cat.id === product.category_id);
+                  const productDiv = document.createElement('div');
+                  productDiv.innerHTML = `<h2>${product.name}</h2>
+                                          <p>Category: ${category ? category.name : 'Unknown'}</p>
+                                          <p>Price: ${product.price} ${product.currency}</p>
+                                          <p>Description: ${product.description}</p>`;
+                  outputDiv.appendChild(productDiv);
+              });
+          } catch (error) {
+              console.error('Error fetching data:', error);
+          }
+      }
+      
+      // Adding event listener to button to load data
+      document.getElementById('loadData').addEventListener('click', () => {
+          getProductsAndCategoryDetails();
+      });
+    </script>
+</body>
+</html>
